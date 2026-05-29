@@ -1,16 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Flame, ArrowRight } from "lucide-react";
 import { menuCategories } from "@/lib/data";
 import type { MenuItemData } from "@/lib/fetchers";
+import { getMenuImageFallback } from "@/lib/menu-images";
 
 const HOME_PREVIEW_LIMIT = 6;
 
 function MenuCard({ item, index }: { item: MenuItemData; index: number }) {
+  const fallback = getMenuImageFallback(item.name) ?? item.image;
+  const [imgSrc, setImgSrc] = useState(item.image);
+
+  useEffect(() => {
+    setImgSrc(item.image);
+  }, [item.image]);
+
   return (
     <motion.div
       layout
@@ -23,11 +31,14 @@ function MenuCard({ item, index }: { item: MenuItemData; index: number }) {
     >
       <div className="relative aspect-[4/3] overflow-hidden">
         <Image
-          src={item.image}
+          src={imgSrc}
           alt={item.name}
           fill
           className="object-cover transition-transform duration-700 group-hover:scale-110"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          onError={() => {
+            if (imgSrc !== fallback) setImgSrc(fallback);
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-charcoal via-transparent to-transparent opacity-80" />
 

@@ -24,7 +24,7 @@ export const menuItems = [
     category: "Signature",
     popular: true,
     description: "House-cured pastrami, Swiss, sauerkraut, Russian dressing on rye",
-    image: "https://images.unsplash.com/photo-1553906059-4d7a48ef7e9a?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=800&auto=format&fit=crop&q=80",
   },
   {
     id: "2",
@@ -51,7 +51,7 @@ export const menuItems = [
     category: "Sandwiches",
     popular: false,
     description: "Roasted turkey, bacon, avocado, tomato, aioli on sourdough",
-    image: "https://images.unsplash.com/photo-1528735602781-9032a9598752?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&auto=format&fit=crop&q=80",
   },
   {
     id: "5",

@@ -1,4 +1,5 @@
 import { menuItems, galleryImages } from "@/lib/data";
+import { resolveMenuImage } from "@/lib/menu-images";
 import type { GalleryItemData, MenuItemData } from "@/lib/fetchers";
 
 /** Demo until ENVIRONMENT=LIVE in .env — then MongoDB + real saves. */
@@ -11,7 +12,7 @@ export function getStaticMenuItems(): MenuItemData[] {
     id: item.id,
     name: item.name,
     price: item.price,
-    image: item.image,
+    image: resolveMenuImage(item.image, item.name),
     category: item.category,
     popular: item.popular,
     description: item.description,

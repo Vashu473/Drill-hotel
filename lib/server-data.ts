@@ -4,6 +4,7 @@ import { seedDatabaseIfEmpty } from "@/lib/seed";
 import MenuItem from "@/models/MenuItem";
 import Gallery from "@/models/Gallery";
 import type { GalleryItemData, MenuItemData } from "@/lib/fetchers";
+import { resolveMenuImage } from "@/lib/menu-images";
 
 export async function getMenuItems(): Promise<MenuItemData[]> {
   if (isDemoMode()) return getStaticMenuItems();
@@ -18,7 +19,7 @@ export async function getMenuItems(): Promise<MenuItemData[]> {
       id: String(item._id),
       name: item.name,
       price: item.price,
-      image: item.image,
+      image: resolveMenuImage(item.image, item.name),
       category: item.category,
       popular: item.popular,
       description: item.description,

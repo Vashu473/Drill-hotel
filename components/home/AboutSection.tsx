@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Award, Users, Clock } from "lucide-react";
+import { MENU_IMAGES } from "@/lib/menu-images";
 
 const stats = [
   { icon: Clock, value: "Since 1987", label: "Heritage" },
@@ -34,7 +35,7 @@ export default function AboutSection() {
             </div>
             <div className="absolute -right-6 -bottom-6 hidden h-48 w-48 overflow-hidden rounded-sm border-4 border-background md:block">
               <Image
-                src="https://images.unsplash.com/photo-1553906059-4d7a48ef7e9a?w=400&q=80"
+                src={MENU_IMAGES.classicReuben}
                 alt="Signature Reuben sandwich"
                 fill
                 className="object-cover"
