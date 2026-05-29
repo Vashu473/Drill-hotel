@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { connectDB } from "@/lib/db";
 import { getAuthFromRequest } from "@/lib/auth";
+import { isDemoMode } from "@/lib/demo";
 import Reservation from "@/models/Reservation";
 import { jsonOk, jsonError } from "@/lib/api";
 
@@ -11,6 +12,16 @@ export async function POST(req: NextRequest) {
 
     if (!name || !phone || !guests || !date || !time) {
       return jsonError("All required fields must be provided", 400);
+    }
+
+    if (isDemoMode()) {
+      return jsonOk(
+        {
+          id: "demo-preview",
+          message: "Reservation request received (preview demo)",
+        },
+        201
+      );
     }
 
     await connectDB();
@@ -40,6 +51,10 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const auth = await getAuthFromRequest(req);
   if (!auth) return jsonError("Unauthorized", 401);
+
+  if (isDemoMode()) {
+    return jsonOk({ reservations: [] });
+  }
 
   try {
     await connectDB();

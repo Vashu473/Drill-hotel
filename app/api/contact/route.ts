@@ -1,12 +1,15 @@
 import { NextRequest } from "next/server";
 import { connectDB } from "@/lib/db";
 import { getAuthFromRequest } from "@/lib/auth";
+import { isDemoMode } from "@/lib/demo";
 import Contact from "@/models/Contact";
 import { jsonOk, jsonError } from "@/lib/api";
 
 export async function GET(req: NextRequest) {
   const auth = await getAuthFromRequest(req);
   if (!auth) return jsonError("Unauthorized", 401);
+
+  if (isDemoMode()) return jsonOk({ messages: [] });
 
   try {
     await connectDB();
@@ -33,6 +36,10 @@ export async function POST(req: NextRequest) {
 
     if (!name || !email || !message) {
       return jsonError("Name, email, and message are required", 400);
+    }
+
+    if (isDemoMode()) {
+      return jsonOk({ message: "Message sent successfully (preview demo)" }, 201);
     }
 
     await connectDB();

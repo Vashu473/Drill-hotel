@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { isDemoMode } from "@/lib/demo";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -16,6 +17,10 @@ const cached: MongooseCache = global.mongooseCache ?? { conn: null, promise: nul
 global.mongooseCache = cached;
 
 export async function connectDB() {
+  if (isDemoMode()) {
+    throw new Error("Database not configured (demo mode)");
+  }
+
   if (!MONGODB_URI) {
     throw new Error("MONGODB_URI is not defined in environment variables");
   }

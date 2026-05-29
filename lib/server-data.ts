@@ -1,19 +1,18 @@
 import { connectDB } from "@/lib/db";
+import { isDemoMode, getStaticMenuItems, getStaticGalleryItems } from "@/lib/demo";
 import { seedDatabaseIfEmpty } from "@/lib/seed";
 import MenuItem from "@/models/MenuItem";
 import Gallery from "@/models/Gallery";
-import {
-  menuItems as fallbackMenu,
-  galleryImages as fallbackGallery,
-} from "@/lib/data";
 import type { GalleryItemData, MenuItemData } from "@/lib/fetchers";
 
 export async function getMenuItems(): Promise<MenuItemData[]> {
+  if (isDemoMode()) return getStaticMenuItems();
+
   try {
     await connectDB();
     await seedDatabaseIfEmpty();
     const items = await MenuItem.find().sort({ createdAt: 1 }).lean();
-    if (items.length === 0) return mapFallbackMenu();
+    if (items.length === 0) return getStaticMenuItems();
 
     return items.map((item) => ({
       id: String(item._id),
@@ -25,16 +24,18 @@ export async function getMenuItems(): Promise<MenuItemData[]> {
       description: item.description,
     }));
   } catch {
-    return mapFallbackMenu();
+    return getStaticMenuItems();
   }
 }
 
 export async function getGalleryImages(): Promise<GalleryItemData[]> {
+  if (isDemoMode()) return getStaticGalleryItems();
+
   try {
     await connectDB();
     await seedDatabaseIfEmpty();
     const images = await Gallery.find().sort({ uploadedAt: -1 }).lean();
-    if (images.length === 0) return mapFallbackGallery();
+    if (images.length === 0) return getStaticGalleryItems();
 
     return images.map((img) => ({
       id: String(img._id),
@@ -42,26 +43,6 @@ export async function getGalleryImages(): Promise<GalleryItemData[]> {
       alt: img.alt,
     }));
   } catch {
-    return mapFallbackGallery();
+    return getStaticGalleryItems();
   }
-}
-
-function mapFallbackMenu(): MenuItemData[] {
-  return fallbackMenu.map((item) => ({
-    id: item.id,
-    name: item.name,
-    price: item.price,
-    image: item.image,
-    category: item.category,
-    popular: item.popular,
-    description: item.description,
-  }));
-}
-
-function mapFallbackGallery(): GalleryItemData[] {
-  return fallbackGallery.map((img) => ({
-    id: img.id,
-    src: img.src,
-    alt: img.alt,
-  }));
 }

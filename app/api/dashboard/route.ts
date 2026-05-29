@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { connectDB } from "@/lib/db";
 import { getAuthFromRequest } from "@/lib/auth";
+import { isDemoMode, getStaticMenuItems, getStaticGalleryItems } from "@/lib/demo";
 import Reservation from "@/models/Reservation";
 import Contact from "@/models/Contact";
 import MenuItem from "@/models/MenuItem";
@@ -10,6 +11,21 @@ import { jsonOk, jsonError } from "@/lib/api";
 export async function GET(req: NextRequest) {
   const auth = await getAuthFromRequest(req);
   if (!auth) return jsonError("Unauthorized", 401);
+
+  if (isDemoMode()) {
+    const menu = getStaticMenuItems();
+    const gallery = getStaticGalleryItems();
+    return jsonOk({
+      stats: {
+        totalReservations: 0,
+        todayReservations: 0,
+        totalMenu: menu.length,
+        totalGallery: gallery.length,
+        unreadMessages: 0,
+      },
+      latestReservations: [],
+    });
+  }
 
   try {
     await connectDB();

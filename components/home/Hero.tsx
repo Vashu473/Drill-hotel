@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Star, ChevronDown, MapPin } from "lucide-react";
+import { Star, ChevronDown } from "lucide-react";
 import { restaurant } from "@/lib/data";
 import { useReservation } from "@/components/providers/ReservationProvider";
 
@@ -30,16 +30,6 @@ export default function Hero() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 pt-24 pb-32 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 2.4 }}
-          className="mb-6 inline-flex items-center gap-2 rounded-full border border-gold/30 bg-charcoal/50 px-4 py-2 backdrop-blur-sm"
-        >
-          <MapPin size={14} className="text-gold" />
-          <span className="text-xs uppercase tracking-[0.2em] text-cream/80">West Village, New York</span>
-        </motion.div>
-
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}

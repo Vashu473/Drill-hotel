@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { connectDB } from "@/lib/db";
 import { getAuthFromRequest } from "@/lib/auth";
+import { isDemoMode, DEMO_WRITE_MESSAGE } from "@/lib/demo";
 import { deleteLocalFile } from "@/lib/files";
 import Gallery from "@/models/Gallery";
 import { jsonOk, jsonError } from "@/lib/api";
@@ -10,6 +11,7 @@ type RouteContext = { params: Promise<{ id: string }> };
 export async function DELETE(req: NextRequest, context: RouteContext) {
   const auth = await getAuthFromRequest(req);
   if (!auth) return jsonError("Unauthorized", 401);
+  if (isDemoMode()) return jsonError(DEMO_WRITE_MESSAGE, 503);
 
   try {
     const { id } = await context.params;

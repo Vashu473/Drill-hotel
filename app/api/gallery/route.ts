@@ -1,33 +1,27 @@
 import { NextRequest } from "next/server";
-import { connectDB } from "@/lib/db";
 import { getAuthFromRequest } from "@/lib/auth";
-import { seedDatabaseIfEmpty } from "@/lib/seed";
+import { getGalleryImages } from "@/lib/server-data";
+import { isDemoMode, DEMO_WRITE_MESSAGE } from "@/lib/demo";
+import { connectDB } from "@/lib/db";
 import Gallery from "@/models/Gallery";
 import { jsonOk, jsonError } from "@/lib/api";
 
 export async function GET() {
-  try {
-    await connectDB();
-    await seedDatabaseIfEmpty();
-
-    const images = await Gallery.find().sort({ uploadedAt: -1 }).lean();
-
-    return jsonOk({
-      images: images.map((img) => ({
-        id: String(img._id),
-        src: img.image,
-        alt: img.alt,
-        uploadedAt: img.uploadedAt,
-      })),
-    });
-  } catch {
-    return jsonError("Failed to fetch gallery", 500);
-  }
+  const images = await getGalleryImages();
+  return jsonOk({
+    images: images.map((img) => ({
+      id: img.id,
+      src: img.src,
+      alt: img.alt,
+    })),
+  });
 }
 
 export async function POST(req: NextRequest) {
   const auth = await getAuthFromRequest(req);
   if (!auth) return jsonError("Unauthorized", 401);
+
+  if (isDemoMode()) return jsonError(DEMO_WRITE_MESSAGE, 503);
 
   try {
     const body = await req.json();

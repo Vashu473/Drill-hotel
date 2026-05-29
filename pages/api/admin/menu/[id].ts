@@ -6,6 +6,7 @@ import { menuUpload, getPublicUrl } from "@/lib/multer";
 import { deleteLocalFile } from "@/lib/files";
 import { getUploadedFile } from "@/lib/multer-request";
 import MenuItem from "@/models/MenuItem";
+import { isDemoMode, DEMO_WRITE_MESSAGE } from "@/lib/demo";
 
 export const config = {
   api: { bodyParser: false },
@@ -13,6 +14,7 @@ export const config = {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!(await requireAdmin(req, res))) return;
+  if (isDemoMode()) return res.status(503).json({ error: DEMO_WRITE_MESSAGE });
 
   const { id } = req.query;
   if (!id || typeof id !== "string") {
