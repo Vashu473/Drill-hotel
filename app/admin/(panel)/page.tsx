@@ -38,11 +38,18 @@ export default function AdminDashboardPage() {
       <h1 className="font-display text-3xl font-bold text-cream">Dashboard</h1>
       <p className="mt-1 text-muted">Overview of your restaurant</p>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard label="Total Reservations" value={stats?.totalReservations ?? 0} />
         <StatCard label="Today's Bookings" value={stats?.todayReservations ?? 0} />
         <StatCard label="Menu Items" value={stats?.totalMenu ?? 0} />
         <StatCard label="Gallery Photos" value={stats?.totalGallery ?? 0} />
+        <Link href="/admin/messages">
+          <StatCard
+            label="Unread Messages"
+            value={stats?.unreadMessages ?? 0}
+            accent={(stats?.unreadMessages ?? 0) > 0 ? "text-yellow-400" : "text-gold"}
+          />
+        </Link>
       </div>
 
       <div className="mt-10">

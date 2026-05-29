@@ -14,6 +14,15 @@ export interface GalleryItemData {
   alt: string;
 }
 
+export interface ContactMessageData {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  read: boolean;
+  createdAt: string;
+}
+
 export interface ReservationData {
   id: string;
   name: string;

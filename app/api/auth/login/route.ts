@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import { connectDB } from "@/lib/db";
 import { getAuthFromRequest, validateAdminCredentials, signToken, setAuthCookie } from "@/lib/auth";
 import { jsonOk, jsonError } from "@/lib/api";
 
@@ -15,12 +14,12 @@ export async function POST(req: NextRequest) {
       return jsonError("Invalid credentials", 401);
     }
 
-    await connectDB();
     const token = signToken({ adminId });
     await setAuthCookie(token);
 
     return jsonOk({ success: true, adminId });
-  } catch {
+  } catch (error) {
+    console.error("Login error:", error);
     return jsonError("Login failed", 500);
   }
 }

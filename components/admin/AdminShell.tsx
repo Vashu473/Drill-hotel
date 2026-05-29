@@ -7,6 +7,7 @@ import {
   CalendarDays,
   UtensilsCrossed,
   Images,
+  Mail,
   LogOut,
   Menu,
   X,
@@ -19,6 +20,7 @@ const navItems = [
   { href: "/admin/reservations", label: "Reservations", icon: CalendarDays },
   { href: "/admin/menu", label: "Menu", icon: UtensilsCrossed },
   { href: "/admin/gallery", label: "Gallery", icon: Images },
+  { href: "/admin/messages", label: "Messages", icon: Mail },
 ];
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
