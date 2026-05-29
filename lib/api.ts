@@ -1,0 +1,17 @@
+import { NextResponse } from "next/server";
+
+export function jsonOk<T>(data: T, status = 200) {
+  return NextResponse.json(data, { status });
+}
+
+export function jsonError(message: string, status = 400) {
+  return NextResponse.json({ error: message }, { status });
+}
+
+export function serializeDoc<T extends { _id: unknown }>(doc: T) {
+  return {
+    ...doc,
+    id: String(doc._id),
+    _id: undefined,
+  };
+}

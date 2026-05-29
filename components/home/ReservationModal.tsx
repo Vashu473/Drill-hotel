@@ -13,11 +13,38 @@ export default function ReservationModal() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    toast.success("Reservation request received! We'll confirm shortly.");
-    setSubmitting(false);
-    closeReservation();
-    (e.target as HTMLFormElement).reset();
+
+    const form = new FormData(e.currentTarget);
+
+    try {
+      const res = await fetch("/api/reservations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.get("name"),
+          phone: form.get("phone"),
+          guests: form.get("guests"),
+          date: form.get("date"),
+          time: form.get("time"),
+          notes: form.get("notes"),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || "Reservation failed");
+        return;
+      }
+
+      toast.success("Reservation request received! We'll confirm shortly.");
+      closeReservation();
+      (e.target as HTMLFormElement).reset();
+    } catch {
+      toast.error("Connection error. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

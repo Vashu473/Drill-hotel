@@ -4,11 +4,11 @@ import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ZoomIn } from "lucide-react";
-import { galleryImages } from "@/lib/data";
+import type { GalleryItemData } from "@/lib/fetchers";
 
-export default function GallerySection() {
+export default function GallerySection({ images }: { images: GalleryItemData[] }) {
   const [lightbox, setLightbox] = useState<string | null>(null);
-  const selected = galleryImages.find((img) => img.id === lightbox);
+  const selected = images.find((img) => img.id === lightbox);
 
   return (
     <section id="gallery" className="section-padding bg-background">
@@ -26,7 +26,7 @@ export default function GallerySection() {
         </motion.div>
 
         <div className="mt-12 columns-1 gap-4 sm:columns-2 lg:columns-3">
-          {galleryImages.map((img, i) => (
+          {images.map((img, i) => (
             <motion.button
               key={img.id}
               initial={{ opacity: 0, scale: 0.95 }}

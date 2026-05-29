@@ -14,10 +14,34 @@ export default function ContactSection() {
   const handleContact = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSending(true);
-    await new Promise((r) => setTimeout(r, 1000));
-    toast.success("Message sent! We'll get back to you soon.");
-    setSending(false);
-    (e.target as HTMLFormElement).reset();
+
+    const form = new FormData(e.currentTarget);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.get("name"),
+          email: form.get("email"),
+          message: form.get("message"),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || "Failed to send message");
+        return;
+      }
+
+      toast.success("Message sent! We'll get back to you soon.");
+      (e.target as HTMLFormElement).reset();
+    } catch {
+      toast.error("Connection error. Please try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (

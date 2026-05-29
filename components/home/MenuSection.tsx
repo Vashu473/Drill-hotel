@@ -4,9 +4,10 @@ import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Flame } from "lucide-react";
-import { menuItems, menuCategories } from "@/lib/data";
+import { menuCategories } from "@/lib/data";
+import type { MenuItemData } from "@/lib/fetchers";
 
-function MenuCard({ item, index }: { item: (typeof menuItems)[0]; index: number }) {
+function MenuCard({ item, index }: { item: MenuItemData; index: number }) {
   return (
     <motion.div
       layout
@@ -58,13 +59,11 @@ function MenuCard({ item, index }: { item: (typeof menuItems)[0]; index: number 
   );
 }
 
-export default function MenuSection() {
+export default function MenuSection({ items }: { items: MenuItemData[] }) {
   const [activeCategory, setActiveCategory] = useState("All");
 
   const filtered =
-    activeCategory === "All"
-      ? menuItems
-      : menuItems.filter((item) => item.category === activeCategory);
+    activeCategory === "All" ? items : items.filter((item) => item.category === activeCategory);
 
   return (
     <section id="menu" className="section-padding bg-charcoal">
@@ -109,9 +108,11 @@ export default function MenuSection() {
 
         <motion.div layout className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence mode="popLayout">
-            {filtered.map((item, i) => (
-              <MenuCard key={item.id} item={item} index={i} />
-            ))}
+            {filtered.length === 0 ? (
+              <p className="col-span-full text-center text-muted">No items in this category yet.</p>
+            ) : (
+              filtered.map((item, i) => <MenuCard key={item.id} item={item} index={i} />)
+            )}
           </AnimatePresence>
         </motion.div>
       </div>

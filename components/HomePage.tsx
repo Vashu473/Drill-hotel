@@ -12,8 +12,14 @@ import GallerySection from "@/components/home/GallerySection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
 import ContactSection from "@/components/home/ContactSection";
 import ReservationModal from "@/components/home/ReservationModal";
+import type { GalleryItemData, MenuItemData } from "@/lib/fetchers";
 
-export default function HomePage() {
+interface HomePageProps {
+  initialMenu: MenuItemData[];
+  initialGallery: GalleryItemData[];
+}
+
+export default function HomePage({ initialMenu, initialGallery }: HomePageProps) {
   return (
     <ReservationProvider>
       <LoadingScreen />
@@ -21,8 +27,8 @@ export default function HomePage() {
       <main>
         <Hero />
         <AboutSection />
-        <MenuSection />
-        <GallerySection />
+        <MenuSection items={initialMenu} />
+        <GallerySection images={initialGallery} />
         <TestimonialsSection />
         <ContactSection />
       </main>
