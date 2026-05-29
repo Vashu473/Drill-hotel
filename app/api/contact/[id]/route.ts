@@ -7,7 +7,7 @@ import { jsonOk, jsonError } from "@/lib/api";
 type RouteContext = { params: Promise<{ id: string }> };
 
 export async function PATCH(req: NextRequest, context: RouteContext) {
-  const auth = getAuthFromRequest(req);
+  const auth = await getAuthFromRequest(req);
   if (!auth) return jsonError("Unauthorized", 401);
 
   try {
@@ -31,7 +31,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
 }
 
 export async function DELETE(req: NextRequest, context: RouteContext) {
-  const auth = getAuthFromRequest(req);
+  const auth = await getAuthFromRequest(req);
   if (!auth) return jsonError("Unauthorized", 401);
 
   try {

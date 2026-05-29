@@ -8,7 +8,7 @@ import Gallery from "@/models/Gallery";
 import { jsonOk, jsonError } from "@/lib/api";
 
 export async function GET(req: NextRequest) {
-  const auth = getAuthFromRequest(req);
+  const auth = await getAuthFromRequest(req);
   if (!auth) return jsonError("Unauthorized", 401);
 
   try {

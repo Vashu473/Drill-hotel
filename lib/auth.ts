@@ -1,51 +1,46 @@
-import jwt from "jsonwebtoken";
-import { cookies } from "next/headers";
+import { SignJWT, jwtVerify } from "jose";
 import { NextRequest } from "next/server";
 
 const JWT_SECRET = process.env.JWT_SECRET || "deli-grill-dev-secret-change-in-production";
-const COOKIE_NAME = "admin_token";
-const TOKEN_EXPIRY = "7d";
+export const COOKIE_NAME = "admin_token";
 
 export interface AdminPayload {
   adminId: string;
 }
 
-export function signToken(payload: AdminPayload) {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
+function getSecretKey() {
+  return new TextEncoder().encode(JWT_SECRET);
 }
 
-export function verifyToken(token: string): AdminPayload | null {
+export async function signToken(payload: AdminPayload): Promise<string> {
+  return new SignJWT({ adminId: payload.adminId })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("7d")
+    .sign(getSecretKey());
+}
+
+export async function verifyToken(token: string): Promise<AdminPayload | null> {
   try {
-    return jwt.verify(token, JWT_SECRET) as AdminPayload;
+    const { payload } = await jwtVerify(token, getSecretKey());
+    if (typeof payload.adminId !== "string") return null;
+    return { adminId: payload.adminId };
   } catch {
     return null;
   }
 }
 
-export async function setAuthCookie(token: string) {
-  const cookieStore = await cookies();
-  cookieStore.set(COOKIE_NAME, token, {
+export function authCookieOptions() {
+  return {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "lax" as const,
     maxAge: 60 * 60 * 24 * 7,
     path: "/",
-  });
+  };
 }
 
-export async function clearAuthCookie() {
-  const cookieStore = await cookies();
-  cookieStore.delete(COOKIE_NAME);
-}
-
-export async function getAuthFromCookies(): Promise<AdminPayload | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(COOKIE_NAME)?.value;
-  if (!token) return null;
-  return verifyToken(token);
-}
-
-export function getAuthFromRequest(req: NextRequest): AdminPayload | null {
+export async function getAuthFromRequest(req: NextRequest): Promise<AdminPayload | null> {
   const token = req.cookies.get(COOKIE_NAME)?.value;
   if (!token) return null;
   return verifyToken(token);
@@ -56,5 +51,3 @@ export function validateAdminCredentials(adminId: string, password: string) {
   const expectedPassword = process.env.ADMIN_PASSWORD || "deligrill2024";
   return adminId === expectedId && password === expectedPassword;
 }
-
-export { COOKIE_NAME };
