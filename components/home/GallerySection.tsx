@@ -2,16 +2,27 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ZoomIn } from "lucide-react";
+import { X, ZoomIn, ArrowRight } from "lucide-react";
 import type { GalleryItemData } from "@/lib/fetchers";
 
-export default function GallerySection({ images }: { images: GalleryItemData[] }) {
+const HOME_PREVIEW_LIMIT = 6;
+
+interface GallerySectionProps {
+  images: GalleryItemData[];
+  limit?: number;
+  viewAllHref?: string;
+}
+
+export default function GallerySection({ images, limit, viewAllHref }: GallerySectionProps) {
+  const isPreview = limit != null;
+  const displayImages = isPreview ? images.slice(0, limit ?? HOME_PREVIEW_LIMIT) : images;
   const [lightbox, setLightbox] = useState<string | null>(null);
-  const selected = images.find((img) => img.id === lightbox);
+  const selected = displayImages.find((img) => img.id === lightbox);
 
   return (
-    <section id="gallery" className="section-padding bg-background">
+    <section id={isPreview ? "gallery-preview" : "gallery"} className="section-padding bg-background">
       <div className="mx-auto max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -23,10 +34,15 @@ export default function GallerySection({ images }: { images: GalleryItemData[] }
           <h2 className="mt-4 font-display text-4xl font-bold text-cream md:text-5xl">
             The <span className="text-gradient-gold">Experience</span>
           </h2>
+          {isPreview && (
+            <p className="mx-auto mt-4 max-w-lg text-muted">
+              Glimpses of Deli Grill. See our full gallery for every moment.
+            </p>
+          )}
         </motion.div>
 
         <div className="mt-12 columns-1 gap-4 sm:columns-2 lg:columns-3">
-          {images.map((img, i) => (
+          {displayImages.map((img, i) => (
             <motion.button
               key={img.id}
               initial={{ opacity: 0, scale: 0.95 }}
@@ -55,6 +71,28 @@ export default function GallerySection({ images }: { images: GalleryItemData[] }
             </motion.button>
           ))}
         </div>
+
+        {isPreview && viewAllHref && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-12 text-center"
+          >
+            <Link
+              href={viewAllHref}
+              className="inline-flex items-center gap-2 rounded-sm border border-gold/40 bg-gold/5 px-8 py-4 text-sm font-semibold uppercase tracking-widest text-gold transition-all hover:border-gold hover:bg-gold hover:text-charcoal"
+            >
+              View Full Gallery
+              <ArrowRight size={18} />
+            </Link>
+            {images.length > (limit ?? HOME_PREVIEW_LIMIT) && (
+              <p className="mt-3 text-sm text-muted">
+                +{images.length - (limit ?? HOME_PREVIEW_LIMIT)} more photos
+              </p>
+            )}
+          </motion.div>
+        )}
       </div>
 
       <AnimatePresence>

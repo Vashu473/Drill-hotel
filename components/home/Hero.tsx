@@ -92,7 +92,7 @@ export default function Hero() {
             <span className="absolute inset-0 -translate-x-full bg-gold-light transition-transform duration-300 group-hover:translate-x-0" />
           </button>
           <a
-            href="#menu"
+            href="/menu"
             className="rounded-sm border border-gold/40 px-10 py-4 text-sm font-semibold uppercase tracking-widest text-cream transition-all hover:border-gold hover:bg-gold/10"
           >
             View Menu

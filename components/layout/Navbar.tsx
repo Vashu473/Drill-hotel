@@ -8,11 +8,11 @@ import { restaurant } from "@/lib/data";
 import { useReservation } from "@/components/providers/ReservationProvider";
 
 const navLinks = [
-  { href: "#about", label: "Our Story" },
-  { href: "#menu", label: "Menu" },
-  { href: "#gallery", label: "Gallery" },
-  { href: "#reviews", label: "Reviews" },
-  { href: "#contact", label: "Contact" },
+  { href: "/#about", label: "Our Story" },
+  { href: "/menu", label: "Menu" },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/#reviews", label: "Reviews" },
+  { href: "/#contact", label: "Contact" },
 ];
 
 export default function Navbar() {

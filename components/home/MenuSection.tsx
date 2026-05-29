@@ -2,10 +2,13 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Flame } from "lucide-react";
+import { Flame, ArrowRight } from "lucide-react";
 import { menuCategories } from "@/lib/data";
 import type { MenuItemData } from "@/lib/fetchers";
+
+const HOME_PREVIEW_LIMIT = 6;
 
 function MenuCard({ item, index }: { item: MenuItemData; index: number }) {
   return (
@@ -59,14 +62,24 @@ function MenuCard({ item, index }: { item: MenuItemData; index: number }) {
   );
 }
 
-export default function MenuSection({ items }: { items: MenuItemData[] }) {
+interface MenuSectionProps {
+  items: MenuItemData[];
+  limit?: number;
+  viewAllHref?: string;
+}
+
+export default function MenuSection({ items, limit, viewAllHref }: MenuSectionProps) {
+  const isPreview = limit != null;
   const [activeCategory, setActiveCategory] = useState("All");
 
-  const filtered =
-    activeCategory === "All" ? items : items.filter((item) => item.category === activeCategory);
+  const filtered = isPreview
+    ? items.slice(0, limit ?? HOME_PREVIEW_LIMIT)
+    : activeCategory === "All"
+      ? items
+      : items.filter((item) => item.category === activeCategory);
 
   return (
-    <section id="menu" className="section-padding bg-charcoal">
+    <section id={isPreview ? "menu-preview" : "menu"} className="section-padding bg-charcoal">
       <div className="mx-auto max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -79,32 +92,35 @@ export default function MenuSection({ items }: { items: MenuItemData[] }) {
             Our <span className="text-gradient-gold">Menu</span>
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-muted">
-            Every dish tells a story. Explore our signature creations, fire-grilled perfection, and
-            New York classics.
+            {isPreview
+              ? "A taste of our favorites. Explore the full menu for every signature dish."
+              : "Every dish tells a story. Explore our signature creations, fire-grilled perfection, and New York classics."}
           </p>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-          className="mt-10 flex flex-wrap justify-center gap-3"
-        >
-          {menuCategories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`rounded-full px-5 py-2 text-sm uppercase tracking-wider transition-all ${
-                activeCategory === cat
-                  ? "bg-gold text-charcoal shadow-[0_0_20px_rgba(201,169,98,0.3)]"
-                  : "border border-gold/20 text-muted hover:border-gold/50 hover:text-cream"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </motion.div>
+        {!isPreview && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="mt-10 flex flex-wrap justify-center gap-3"
+          >
+            {menuCategories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`rounded-full px-5 py-2 text-sm uppercase tracking-wider transition-all ${
+                  activeCategory === cat
+                    ? "bg-gold text-charcoal shadow-[0_0_20px_rgba(201,169,98,0.3)]"
+                    : "border border-gold/20 text-muted hover:border-gold/50 hover:text-cream"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </motion.div>
+        )}
 
         <motion.div layout className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence mode="popLayout">
@@ -115,6 +131,28 @@ export default function MenuSection({ items }: { items: MenuItemData[] }) {
             )}
           </AnimatePresence>
         </motion.div>
+
+        {isPreview && viewAllHref && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-12 text-center"
+          >
+            <Link
+              href={viewAllHref}
+              className="inline-flex items-center gap-2 rounded-sm border border-gold/40 bg-gold/5 px-8 py-4 text-sm font-semibold uppercase tracking-widest text-gold transition-all hover:border-gold hover:bg-gold hover:text-charcoal"
+            >
+              View Full Menu
+              <ArrowRight size={18} />
+            </Link>
+            {items.length > (limit ?? HOME_PREVIEW_LIMIT) && (
+              <p className="mt-3 text-sm text-muted">
+                +{items.length - (limit ?? HOME_PREVIEW_LIMIT)} more dishes
+              </p>
+            )}
+          </motion.div>
+        )}
       </div>
     </section>
   );

@@ -27,8 +27,8 @@ export default function HomePage({ initialMenu, initialGallery }: HomePageProps)
       <main>
         <Hero />
         <AboutSection />
-        <MenuSection items={initialMenu} />
-        <GallerySection images={initialGallery} />
+        <MenuSection items={initialMenu} limit={6} viewAllHref="/menu" />
+        <GallerySection images={initialGallery} limit={6} viewAllHref="/gallery" />
         <TestimonialsSection />
         <ContactSection />
       </main>
