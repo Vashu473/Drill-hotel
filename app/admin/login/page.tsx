@@ -1,11 +1,9 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 export default function AdminLoginPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -20,6 +18,7 @@ export default function AdminLoginPage() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({ adminId, password }),
       });
 
@@ -27,15 +26,15 @@ export default function AdminLoginPage() {
 
       if (!res.ok) {
         toast.error(data.error || "Login failed");
+        setLoading(false);
         return;
       }
 
       toast.success("Welcome back!");
-      router.push("/admin");
-      router.refresh();
+      // Full page load so middleware receives the new auth cookie
+      window.location.href = "/admin";
     } catch {
       toast.error("Connection error");
-    } finally {
       setLoading(false);
     }
   };

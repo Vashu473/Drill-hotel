@@ -1,6 +1,16 @@
-import { NextRequest } from "next/server";
-import { getAuthFromRequest, validateAdminCredentials, signToken, setAuthCookie } from "@/lib/auth";
-import { jsonOk, jsonError } from "@/lib/api";
+import { NextRequest, NextResponse } from "next/server";
+import { getAuthFromRequest, validateAdminCredentials, signToken, COOKIE_NAME } from "@/lib/auth";
+import { jsonError } from "@/lib/api";
+
+function authCookieOptions() {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    maxAge: 60 * 60 * 24 * 7,
+    path: "/",
+  };
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -15,9 +25,11 @@ export async function POST(req: NextRequest) {
     }
 
     const token = signToken({ adminId });
-    await setAuthCookie(token);
 
-    return jsonOk({ success: true, adminId });
+    const response = NextResponse.json({ success: true, adminId });
+    response.cookies.set(COOKIE_NAME, token, authCookieOptions());
+
+    return response;
   } catch (error) {
     console.error("Login error:", error);
     return jsonError("Login failed", 500);
@@ -27,5 +39,5 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const auth = getAuthFromRequest(req);
   if (!auth) return jsonError("Unauthorized", 401);
-  return jsonOk({ authenticated: true, adminId: auth.adminId });
+  return NextResponse.json({ authenticated: true, adminId: auth.adminId });
 }
